@@ -25,7 +25,7 @@ export class RegisterComponent implements OnInit {
   }
 
   onSubmit = () => {
-    this.router.navigate(['']);
+    this.router.navigate(['/api/login']);
   }
 
   public onAddUser(addForm: NgForm): void {
@@ -40,7 +40,7 @@ export class RegisterComponent implements OnInit {
           (response: User) => {
             addForm.reset();
           });
-        this.router.navigate(['register/user']);
+        this.router.navigate(['/api/user']);
       } else {
         this.alertConfirm = true;
       }

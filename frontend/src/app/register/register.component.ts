@@ -1,7 +1,8 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormGroup, FormsModule, NgForm, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
+import { NgbAlert } from '@ng-bootstrap/ng-bootstrap';
+import { empty } from 'rxjs';
 import { User } from '../models/user';
 import { UserService } from '../services/user.service';
 
@@ -11,8 +12,14 @@ import { UserService } from '../services/user.service';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
+  alertCompletion = false;
+  alertConfirm = false;
+  name: string | undefined;
+  userLogin: string | undefined;
+  userPassword: string | undefined;
+  confirmPassword: string | undefined;
 
-  constructor(private router: Router, private userService: UserService) { }
+  constructor(private router: Router, private userService: UserService) {  }
 
   ngOnInit(): void {
   }
@@ -22,16 +29,31 @@ export class RegisterComponent implements OnInit {
   }
 
   public onAddUser(addForm: NgForm): void {
-    this.userService.addUser(addForm.value).subscribe(
-      (response: User) => {
-        addForm.reset();
+    if ((this.name == null || this.name.length == 0) ||
+    (this.userLogin == null || this.userLogin.length == 0) ||
+    (this.userPassword == null || this.userPassword.length == 0)) {
+
+      this.alertCompletion = true;
+    } else {
+      if(this.userPassword == this.confirmPassword){
+        this.userService.addUser(addForm.value).subscribe(
+          (response: User) => {
+            addForm.reset();
+          });
+        this.router.navigate(['register/user']);
+      } else {
+        this.alertConfirm = true;
       }
-    )
+    }
   }
 
-  checkPasswords: ValidatorFn = (group: AbstractControl):  ValidationErrors | null => {
-    let pass = group.get('password')?.value;
-    let confirmPass = group.get('confirmPassword')?.value
-    return pass === confirmPass ? null : { notSame: true }
+  closeCopmpletion(id: string) {
+    document.getElementById(id)!.style.display="none";
+    this.alertCompletion = false;
+  }
+
+  closeConfirm(id: string){
+    document.getElementById(id)!.style.display="none";
+    this.alertConfirm = false;
   }
 }
